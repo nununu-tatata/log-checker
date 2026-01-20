@@ -1,0 +1,246 @@
+@charset "UTF-8";
+
+/* ==========================================================================
+   レスポンシブ対応設定
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. タブレット・PC狭画面向け (Max Width: 1024px)
+   レイアウトを「左右分割」から「縦並び」に切り替えます
+   左カラム（サイドバー）の固定を解除します
+   -------------------------------------------------------------------------- */
+@media screen and (max-width: 1024px) {
+    .container {
+        padding: 10px;
+        max-width: 100%;
+    }
+
+    /* メインレイアウトを縦並びに */
+    .layout-wrapper {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    /* ★修正: サイドバーの固定を強制解除 */
+    .sidebar {
+        width: 100%;
+        min-width: auto;
+        position: static !important; /* ここで固定(sticky/fixed)を解除 */
+        height: auto !important;     /* 高さ制限も解除 */
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 20px;
+        margin-bottom: 20px;
+    }
+    
+    /* 設定パネル内の高さ制限も解除 */
+    .settings-panel {
+        max-height: none;
+        overflow-y: visible;
+        position: static;
+    }
+
+    /* 抽出設定などのグリッドを少し広めに */
+    .filter-grid-3col, 
+    .options-grid-3col {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    }
+
+    /* メインコンテンツ（結果表示） */
+    .main-content {
+        width: 100%;
+        padding-left: 0;
+    }
+
+    /* フッターアクション（解析ボタン等）を画面下固定解除 */
+    .action-area.sticky-bottom {
+        position: static;
+        border-top: none;
+        padding: 20px 0 0 0;
+        box-shadow: none;
+        background: transparent;
+    }
+
+    /* フローティング目次ボタンの位置調整 */
+    #merged-toc-fab {
+        bottom: 80px; 
+        right: 15px;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   2. 一般的なスマートフォン向け (Max Width: 768px)
+   ヘッダー順序入替、文字サイズ調整、カードレイアウト変更
+   -------------------------------------------------------------------------- */
+@media screen and (max-width: 768px) {
+    /* ヘッダー周り */
+    header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    /* ★修正: ボタン群をタイトルの上に移動 */
+    .header-right-controls {
+        order: -1; /* 順序を一番上に */
+        width: 100%;
+        justify-content: flex-end; /* 右寄せ */
+        border-top: none;
+        border-bottom: 1px dashed var(--border-color); /* 下線に変更 */
+        padding-top: 0;
+        padding-bottom: 10px;
+        margin-bottom: 5px;
+    }
+
+    h1 {
+        font-size: 20px;
+        line-height: 1.4;
+    }
+    .subtitle {
+        font-size: 11px;
+    }
+
+    /* ログ結合ツール */
+    .merger-header {
+        padding: 10px;
+    }
+    .merger-title-group {
+        gap: 8px;
+    }
+    .merger-upload-icon {
+        font-size: 24px;
+    }
+    .merger-footer-action {
+        flex-direction: column;
+        align-items: stretch; 
+        gap: 15px;
+    }
+    .btn-merge {
+        width: 100%;
+        text-align: center;
+        padding: 12px;
+    }
+
+    /* キャラクターカード・ログ表示 */
+    .log-item {
+        flex-direction: column; /* ログの行を縦積みに */
+        align-items: flex-start;
+        gap: 8px;
+        padding: 10px;
+    }
+    
+    .log-main {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .log-tags {
+        width: 100%;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+        gap: 4px;
+        margin-top: 5px;
+        border-top: 1px dotted var(--border-color);
+        padding-top: 5px;
+    }
+    
+    /* ダイス値の表示位置調整 */
+    .dice-val {
+        margin-left: auto; /* 右端に寄せる */
+        font-size: 16px;
+        min-width: 30px;
+        height: 30px;
+        line-height: 30px;
+    }
+    
+    /* ログ詳細（計算式など）を折り返し許可 */
+    .dice-formula {
+        white-space: normal;
+        word-break: break-all;
+        font-size: 11px;
+        color: var(--sub-text-color);
+    }
+    
+    /* 技能名とタブ名を縦並びにしないための調整 */
+    .skill-row {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+    .tab-badge {
+        font-size: 9px;
+        padding: 2px 4px;
+    }
+
+    /* 統計バッジ */
+    .stats-footer {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    /* モーダルウィンドウ */
+    .modal-content {
+        width: 90%;
+        max-height: 85vh;
+        padding: 15px;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   3. スマホ最小サイズ向け (Max Width: 375px)
+   -------------------------------------------------------------------------- */
+@media screen and (max-width: 375px) {
+    .container {
+        padding: 5px;
+    }
+    
+    body, button, input, select, textarea {
+        font-size: 13px;
+    }
+
+    .btn-icon, .round-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 14px;
+    }
+    .disclaimer-btn {
+        font-size: 10px;
+        padding: 4px 8px;
+    }
+
+    .filter-grid-3col, 
+    .options-grid-3col {
+        grid-template-columns: 1fr;
+    }
+
+    .chip-label {
+        padding: 4px 8px;
+        font-size: 11px;
+    }
+    
+    .btn-sort {
+        font-size: 11px;
+        padding: 6px;
+    }
+
+    .export-buttons {
+        flex-direction: column;
+        gap: 8px;
+    }
+    .copy-text-btn {
+        width: 100%;
+    }
+
+    .merger-file-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+    .merger-remove-btn {
+        align-self: flex-end;
+        padding: 5px;
+    }
+}

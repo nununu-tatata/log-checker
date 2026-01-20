@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CoC成長チェックツール</title>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-NNC080P0Y3"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-NNC080P0Y3');
+    </script>
+    <meta property="og:title" content="CoC6版ログ成長チェックツール">
+    <meta property="og:description" content="Tekeyやココフォリアのログをドラッグ＆ドロップするだけで、技能の成長（成功・失敗・クリティカルなど）を自動判定・集計するツールです。スマホ対応！">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://nununu-tatata.github.io/log-checker/">
+    <meta property="og:image" content="https://nununu-tatata.github.io/log-checker/ogp.png">
+    <meta name="twitter:card" content="summary_large_image"> <meta name="twitter:site" content="@nukonuko_4"> ```
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎲</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Zen+Maru+Gothic:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="responsive.css">
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <div class="header-left">
+            <h1>CoC成長チェックツール</h1>
+            <p class="subtitle">６版のTekey（v2）とココフォリア（main・ALL）のログに対応。様々なオプションで好きな成長をチェックしテキスト出力可能。右上の規約をご確認の上ご利用ください。</p>
+            <a href="https://nununu-tatata.github.io/404-tool/" target="_blank" class="related-link">
+                🎲CoCチャパレ＆コマ作成ツール <span style="font-size:10px;">↗</span>
+            </a>
+        </div>
+        
+        <div class="header-right-controls">
+            <button id="btn-theme-toggle" class="btn-icon" title="テーマ切替">🌙</button>
+            <button class="disclaimer-btn" onclick="openModal('disclaimerModal')">
+                <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+                規約
+            </button>
+            <button class="round-btn" onclick="openModal('authorModal')" title="作った人">
+                <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+            </button>
+            <a href="https://forms.gle/K2Lkdcw2akgnDvoVA" target="_blank" class="round-btn" title="お問い合わせ">
+                <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+            </a>
+            <div class="share-wrapper">
+                <button class="round-btn share-main-btn" onclick="toggleShareMenu(event)" title="シェアする">
+                    <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
+                </button>
+                <div class="share-copy-tooltip" id="shareTooltip">リンクをコピーしました</div>
+                <div id="shareMenu" class="share-menu">
+                    <button class="share-item" onclick="shareCopyLink()">
+                        <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                        リンクをコピー
+                    </button>
+                    <a href="#" class="share-item" onclick="shareToX(); return false;">
+                        <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                        Xでシェア
+                    </a>
+                    <a href="#" class="share-item" onclick="shareToBluesky(); return false;">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" style="fill: #0085ff;"><path d="M3.468 1.948C5.303 3.325 7.276 6.118 8 7.616c.725-1.498 2.698-4.29 4.532-5.668C13.855.955 16 .186 16 2.632c0 .489-.28 4.105-.444 4.692-.572 2.04-2.653 2.561-4.504 2.246 3.236.551 4.06 2.375 2.281 4.2-3.376 3.464-4.852-.87-5.23-1.98-.07-.204-.103-.3-.103-.218 0-.081-.033.014-.102.218-.379 1.11-1.855 5.444-5.231 1.98-1.778-1.825-.955-3.65 2.28-4.2-1.85.315-3.932-.205-4.503-2.246C.28 6.737 0 3.12 0 2.632 0 .186 2.145.955 3.468 1.948"/></svg>
+                        Blueskyでシェア
+                    </a>
+                    <a href="#" class="share-item" onclick="shareToMisskey(); return false;">
+                        <svg viewBox="0 0 24 24" style="color:#86b300; fill:currentColor;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/></svg>
+                        Misskeyでシェア
+                    </a>
+                    <a href="#" class="share-item" onclick="shareToDiscord(); return false;">
+                        <svg viewBox="0 0 24 24" style="color:#5865F2; fill:currentColor;"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
+                        Discordでシェア
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="merger-section">
+        <div class="merger-header" id="merger-toggle">
+            <div class="merger-title-group">
+                <span class="merger-icon">🔗</span>
+                <div class="merger-text-col">
+                    <span class="merger-title">ログ結合ツール</span>
+                    <span class="merger-subtitle">１日目、2日目・前編、後編などの複数のログファイルを1つにまとめる</span>
+                </div>
+            </div>
+            <span class="accordion-icon" style="transform: rotate(-90deg);"></span>
+        </div>
+        <div class="merger-body" id="merger-body">
+            <div class="merger-content">
+                <div id="merger-drop-zone" class="merger-upload-area">
+                    <span class="merger-upload-icon">📂</span>
+                    <p class="merger-upload-text">
+                        ここにHTMLファイルをドラッグ＆ドロップ<br>
+                        またはクリックして選択（複数可）
+                    </p>
+                    <input type="file" id="merger-file-input" accept=".html" multiple class="hidden">
+                </div>
+                
+                <div id="merger-file-list" class="merger-file-list"></div>
+
+                <div class="merger-footer-action">
+                    <p class="merger-note">
+                        ※基本読み込んだファイルの順番にログを結合しますが、バラバラの順番で読み込んだ場合<br>
+                        　ファイル名（Day1, 前半, 日付など）を自動判定して並び替え、目次付き(ページ右下)で結合します。<br>
+                        ※場合によっては順番がうまく自動並び替え出来ない場合がありますので、適宜ファイル名を調整してください。<br>
+                        ※結合後は下の「ログ読込」でまとめて成長チェックできます。
+                    </p>
+                    <button id="btn-merge-download" class="btn-merge">結合してダウンロード</button>
+                </div>
+                <div id="merger-status" class="merger-status"></div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="layout-wrapper">
+        <aside class="sidebar">
+            <div class="settings-panel" id="settings-area">
+                <div id="drop-zone" class="upload-area-compact">
+                    <span class="upload-icon">📂</span>
+                    <div class="upload-text">ログ読込</div>
+                    <input type="file" id="file-input" accept=".html" class="hidden">
+                </div>
+
+                <div class="panel-header">抽出設定</div>
+                <div class="section-group">
+                    <div class="section-header-row">
+                        <span class="section-label">対象タブ</span>
+                        <div class="action-buttons">
+                            <button id="btn-check-all-tabs" class="btn-text-only">全選択</button>
+                            <span class="separator">/</span>
+                            <button id="btn-uncheck-all-tabs" class="btn-text-only">全解除</button>
+                        </div>
+                    </div>
+                    <div id="tab-checkboxes" class="checkbox-list"></div>
+                </div>
+
+                <div class="section-group">
+                    <div class="section-header-row">
+                        <span class="section-label">対象の発言者 (ダイスロール有のみ)</span>
+                        <div class="action-buttons">
+                            <button id="btn-check-all-chars" class="btn-text-only">全選択</button>
+                            <span class="separator">/</span>
+                            <button id="btn-uncheck-all-chars" class="btn-text-only">全解除</button>
+                        </div>
+                    </div>
+                    <div id="char-checkboxes" class="checkbox-list"></div>
+                </div>
+
+                <div class="section-group">
+                    <span class="section-label">抽出項目</span>
+                    <div class="filter-grid-3col">
+                        <label class="filter-chip"><input type="checkbox" id="chk-filter-crit" checked><span class="chip-text">決定的成功</span></label>
+                        <label class="filter-chip"><input type="checkbox" id="chk-filter-fatal" checked><span class="chip-text">致命的失敗</span></label>
+                        <label class="filter-chip"><input type="checkbox" id="chk-filter-special" checked><span class="chip-text">スペシャル</span></label>
+                        
+                        <div class="filter-group-integrated">
+                            <label class="filter-chip-header">
+                                <input type="checkbox" id="chk-filter-success">
+                                <span class="chip-text">通常成功</span>
+                            </label>
+                            <div id="opt-success-exclude" class="filter-sub-panel hidden">
+                                <label class="check-line-small" title="通常成功の場合のみ、これらを省きます"><input type="checkbox" id="chk-success-exclude-status" checked> ステータス・倍数系を除く</label>
+                            </div>
+                        </div>
+
+                        <label class="filter-chip"><input type="checkbox" id="chk-filter-failure"><span class="chip-text">失敗</span></label>
+                        
+                        <div class="filter-group-integrated">
+                            <label class="filter-chip-header">
+                                <input type="checkbox" id="chk-filter-1d100">
+                                <span class="chip-text">1d100</span>
+                            </label>
+                            <div id="opt-1d100-range" class="filter-sub-panel hidden">
+                                <label class="check-line-small"><input type="checkbox" id="chk-1d100-filter"> 1~5, 96~100 のみ</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel-header mt-20">オプション</div>
+                <div class="options-grid-3col">
+                    <div class="option-card-small" data-tooltip="コマンドと結果の全文を表示します。">
+                        <div class="opt-header-small">
+                            <span class="opt-title">ログ詳細を表示</span>
+                            <label class="toggle-switch"><input type="checkbox" id="toggle-detail-log" checked><span class="slider"></span></label>
+                        </div>
+                    </div>
+                    <div class="option-card-small" data-tooltip="同じ技能の通常成功は初回のみ表示します。">
+                        <div class="opt-header-small">
+                            <span class="opt-title">通常成功の重複を除外</span>
+                            <label class="toggle-switch"><input type="checkbox" id="toggle-deduplicate"><span class="slider"></span></label>
+                        </div>
+                    </div>
+                    <div class="option-card-small" data-tooltip="ステータス・倍数ロールで出目1の場合、<br>能力値成長の可能性があるため抽出します。">
+                        <div class="opt-header-small">
+                            <span class="opt-title">能力値成長も表示</span>
+                            <label class="toggle-switch"><input type="checkbox" id="toggle-ability-growth"><span class="slider"></span></label>
+                        </div>
+                    </div>
+                    <div class="option-card-small" data-tooltip="結果問わずSAN/アイデア/幸運/知識などを全て省きます。">
+                        <div class="opt-header-small">
+                            <span class="opt-title">ステータス除外</span>
+                            <label class="toggle-switch"><input type="checkbox" id="toggle-exclude-status"><span class="slider"></span></label>
+                        </div>
+                    </div>
+                    <div class="option-card-small" data-tooltip="結果問わずCON*5, STR*4 などを全て省きます。">
+                        <div class="opt-header-small">
+                            <span class="opt-title">倍数ロール除外</span>
+                            <label class="toggle-switch"><input type="checkbox" id="toggle-exclude-multi"><span class="slider"></span></label>
+                        </div>
+                    </div>
+                    <div class="option-card-small" id="card-target-roll" data-tooltip="指定した出目は結果に関わらず必ず抽出します。">
+                        <div class="opt-header-small">
+                            <span class="opt-title">出目指定</span>
+                            <label class="toggle-switch"><input type="checkbox" id="toggle-target-roll"><span class="slider"></span></label>
+                        </div>
+                        <div class="opt-body-small disabled">
+                            <input type="number" id="inp-target-value" class="styled-input-small" placeholder="例: 96" disabled>
+                        </div>
+                    </div>
+                    <div class="option-card-small" id="card-max-target" data-tooltip="指定した値より高い技能値での通常成功を除外します。">
+                        <div class="opt-header-small">
+                            <span class="opt-title">通常成功の上限</span>
+                            <label class="toggle-switch"><input type="checkbox" id="toggle-max-target"><span class="slider"></span></label>
+                        </div>
+                        <div class="opt-body-small disabled">
+                            <input type="number" id="inp-success-max-target" class="styled-input-small" placeholder="例: 75" disabled>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-area sticky-bottom">
+                    <div class="sort-buttons-group">
+                        <button id="btn-sort-time" class="btn-sort active" data-tooltip="時系列順に表示">🕒 時系列順</button>
+                        <button id="btn-sort-clfb" class="btn-sort" data-tooltip="CL/FBが上に優先表示">✨ CL/FB優先順</button>
+                        <button id="btn-sort-1cl100fb" class="btn-sort" data-tooltip="CL/FBの中でも1と100が<br>上に優先表示">🔥 1/100優先順</button>
+                    </div>
+                    <button id="btn-recalc" class="btn-analyze">成長チェック・表示更新</button>
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div id="result-area">
+                <div class="placeholder-text">
+                    左側の「ログ読込」から<br>HTMLファイルを読み込んでください
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div class="footer">
+        <div class="footer-center">
+            <p>当ツールは、「株式会社アークライト」及び「株式会社KADOKAWA」が権利を有する『クトゥルフ神話TRPG』シリーズの二次創作物です。</p>
+            <p>Call of Cthulhu is copyright ©1981, 2015, 2019 by Chaosium Inc. ;all rights reserved. Arranged by Arclight Inc.</p>
+            <p>Call of Cthulhu is a registered trademark of Chaosium Inc.</p>
+            <p>PUBLISHED BY KADOKAWA CORPORATION　「クトゥルフ神話TRPG」「新クトゥルフ神話TRPG」</p>
+        </div>
+        <div class="footer-right">
+            <p>最終更新日：2026/01/19</p>
+            <p><span style="cursor:pointer; text-decoration:underline;" onclick="openModal('creditsModal')">Special Thanks</span> | © 2026 ぬこた</p>
+        </div>
+    </div>
+</div>
+
+<div id="disclaimerModal" class="modal-overlay" onclick="closeModal('disclaimerModal')">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <button class="modal-close-btn" onclick="closeModal('disclaimerModal')">×</button>
+        <div class="modal-title">免責事項・利用規約</div>
+        <div class="modal-body">
+            <ul>
+                <li>本ツールは、制作者が個人の趣味の範囲で開発・公開している非公式ツールです。</li>
+                <li>本ツールの利用によって生じた、いかなる損害・トラブル（データの消失、予期せぬ動作、セッションの遅延等）についても、制作者は一切の責任を負いません。</li>
+                <li>Tekey様、CCFOLIA様などの関連サイトとは一切関係ありません。各サイトの仕様変更により、予告なく本ツールが利用できなくなる場合があります。</li>
+                <li>本ツールは無料で提供されていますが、動作保証、および不具合修正や機能追加の義務を負うものではありません。</li>
+                <li>予告なくサービスを停止、または仕様を変更する場合があります。</li>
+            </ul>
+            <div class="modal-title">注意事項</div>
+            <ul>
+                <li>ページ内で完結しているため、ファイルがどこかのサーバーにアップロードされる事はありません。</li>
+                <li>必ずTekeyのv2ログとココフォリアのmain/allログを使用してください。その他や整形済みのログは動作対応外です。</li>
+            </ul>
+            <div class="modal-title">動作環境</div>
+            <ul>
+                <li>推奨環境： PC / Google Chrome</li>
+                <li>確認済み環境： PC / Google Chrome</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div id="creditsModal" class="modal-overlay" onclick="closeModal('creditsModal')">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <button class="modal-close-btn" onclick="closeModal('creditsModal')">×</button>
+        <div class="modal-title">Special Thanks</div>
+        <div class="modal-body">
+            <p>本ツールの作成にあたり、以下のサイト・ツール様を参考に、または利用させていただきました。多大なる感謝を申し上げます。</p>
+            <h4 style="margin: 15px 0 5px; color: var(--primary-color); border-bottom: 1px dashed var(--border-color);">ツール連携・対応</h4>
+            <ul style="list-style: none; padding: 0;">
+                <li>・<a href="https://tekey.jp/" target="_blank" style="color: var(--text-color);">Tekey 様</a></li>
+                <li>・<a href="https://ccfolia.com/" target="_blank" style="color: var(--text-color);">CCFOLIA (ココフォリア) 様</a></li>
+            </ul>
+            <h4 style="margin: 15px 0 5px; color: var(--primary-color); border-bottom: 1px dashed var(--border-color);">リスペクト・参考元</h4>
+            <ul style="list-style: none; padding: 0;">
+                <li>・<a href="https://aimsot.net" target="_blank" style="color: var(--text-color);">Hotch Potch. 様</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div id="authorModal" class="modal-overlay" onclick="closeModal('authorModal')">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <button class="modal-close-btn" onclick="closeModal('authorModal')">×</button>
+        <div class="modal-title">作った人</div>
+        <div class="modal-body">
+            <div class="author-container">
+                <img src="https://drive.google.com/thumbnail?sz=w1000&id=1aXVDSHGr6bvIoyjgPY8lr8PjhZJLaotJ" class="author-icon" alt="ぬこた">
+                <div class="author-info">
+                    <div class="author-name-row"><span class="author-name">ぬこた</span><a href="https://x.com/nukonuko_4" target="_blank" class="author-x-btn"><svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a></div>
+                    <div class="author-bio">気ままにCoCテキセメインでTRPG遊んでいます。<br>不具合報告や要望は上部のお問い合わせボタンまでお気軽にどうぞ。</div>
+                </div>
+            </div>
+            <div class="author-support">
+                <p>当ツールを気に入って支援したい富豪・石油王様向けに、<br><a href="https://booth.pm/wish_list_names/K1NTM3Bx" target="_blank" class="support-link">BOOTHのスキリスト</a>、<a href="https://www.amazon.jp/hz/wishlist/ls/2SYYSJUGAZKIR?ref_=wl_share" target="_blank" class="support-link">Amazonのほしいも</a>を公開しています。<br>その他URLでのギフトも大歓迎です。<span class="support-note">（※ギフトURLはお問い合わせボタンからお送りください。）</span></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="config.js"></script>
+<script src="parser_tekey.js"></script>
+<script src="parser_ccfolia.js"></script>
+<script src="log_merger.js"></script>
+<script src="main.js"></script>
+</body>
+</html>
