@@ -86,8 +86,12 @@ body {
 
 /* --- ヘッダー --- */
 header {
-  display: flex; justify-content: space-between; align-items: center;
-  margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px;
+  display: flex; 
+  justify-content: space-between; 
+  align-items: flex-end; /* ★変更: ボタンを右下に寄せるため flex-end に変更 */
+  margin-bottom: 20px; 
+  border-bottom: 1px solid var(--border-color); 
+  padding-bottom: 15px;
 }
 h1 { 
     font-size: 28px; font-weight: 700; color: var(--primary-color); margin: 0; 
@@ -219,7 +223,12 @@ h1 {
 }
 .footer p { margin: 2px 0; }
 @media (min-width: 768px) {
-    .footer { flex-direction: row; justify-content: space-between; text-align: left; }
+    .footer { 
+        flex-direction: row; 
+        justify-content: space-between; 
+        text-align: left;
+        align-items: flex-end; /* ★追加: フッター右側を右下に寄せる */
+    }
     .footer-right { text-align: right; }
 }
 
@@ -455,7 +464,7 @@ input:checked + .slider:before { transform: translateX(14px); }
     border-color: var(--primary-color); 
 }
 
-/* ★修正: 解析ボタンの色を新変数に変更 */
+/* 解析ボタン (新変数使用) */
 .btn-analyze {
   padding: 10px; background: var(--analyze-btn-bg); color: #fff;
   border: none; border-radius: 4px; font-weight: 700; font-size: 14px;
