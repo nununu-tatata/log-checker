@@ -16,6 +16,9 @@
   --toggle-off: #e0e0e0;
   --toggle-on: #8c7b75;
 
+  /* 解析ボタン専用色 (少し濃く強調) */
+  --analyze-btn-bg: #6d5f5a;
+
   /* タグ色 */
   --tag-crit: #f1c40f;
   --tag-special: #e84393;
@@ -48,6 +51,9 @@
   --overlay-bg: rgba(0,0,0,0.8);
   --toggle-off: #454d59;
   --toggle-on: #7ab6d6;
+
+  /* 解析ボタン専用色 (少し鮮やかに) */
+  --analyze-btn-bg: #4a90b6;
 
   --tag-crit: #f1c40f;
   --tag-special: #e84393;
@@ -449,8 +455,9 @@ input:checked + .slider:before { transform: translateX(14px); }
     border-color: var(--primary-color); 
 }
 
+/* ★修正: 解析ボタンの色を新変数に変更 */
 .btn-analyze {
-  padding: 10px; background: var(--primary-color); color: #fff;
+  padding: 10px; background: var(--analyze-btn-bg); color: #fff;
   border: none; border-radius: 4px; font-weight: 700; font-size: 14px;
   cursor: pointer; transition: 0.2s; width: 100%;
 }

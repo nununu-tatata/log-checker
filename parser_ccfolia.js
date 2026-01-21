@@ -25,11 +25,10 @@ function parseCCFoliaLog(doc) {
         const contentSpan = spans[2];
         const contentText = contentSpan.textContent.trim();
 
-        // ★修正: 厳密なダイスロール判定
-        // 単に「＞」があるだけでは会話文(＜技能＞など)を拾ってしまうため条件追加
+        // ★修正: 厳密なダイスロール判定 (半角矢印、シークレット系コマンド対応)
         
-        // A. 矢印の直後に数値がある (例: ＞ 50, ＞ 3)
-        const hasArrowNumber = /[＞]\s*\d+/.test(contentText);
+        // A. 矢印の直後に数値 (＞ > -> →)
+        const hasArrowNumber = /(?:[＞→>]|->)\s*\d+/.test(contentText);
         
         // B. ダイス展開式がある (例: (1D100<=70))
         const hasDiceFormula = /\(\d+D\d+/.test(contentText);
@@ -37,8 +36,8 @@ function parseCCFoliaLog(doc) {
         // C. 繰り返しロール記号がある (例: #1)
         const hasRepeat = /#\d+/.test(contentText);
         
-        // D. 明らかなBCDiceコマンドが含まれる (CCB, RES, 1D100, x数字)
-        const hasCommand = /(?:CC|RES|CBR|1D100|x\d+)/i.test(contentText);
+        // D. 明らかなBCDiceコマンドが含まれる (CCB, RES, 1D100, x数字, SCC, SRES, SCBR)
+        const hasCommand = /(?:S?CC|S?RES|S?CBR|SCC|1D100|x\d+)/i.test(contentText);
 
         // いずれにも該当しない場合は「ただのチャット」とみなして除外
         if (!hasArrowNumber && !hasDiceFormula && !hasRepeat && !hasCommand) return;
@@ -58,8 +57,10 @@ function parseCCFoliaLog(doc) {
             command = contentText.substring(0, hashOneIndex).trim();
             result = contentText.substring(hashOneIndex).trim();
         } else {
-            const arrowIndex = contentText.indexOf('＞');
-            if (arrowIndex !== -1) {
+            // 矢印も半角対応
+            const arrowMatch = contentText.match(/[＞→>]|->/);
+            if (arrowMatch) {
+                const arrowIndex = arrowMatch.index;
                 const preArrowText = contentText.substring(0, arrowIndex);
                 const lastParenIndex = preArrowText.lastIndexOf('(');
                 

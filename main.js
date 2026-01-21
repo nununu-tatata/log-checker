@@ -126,6 +126,9 @@ function analyzeLog() {
     // クリーニング用正規表現
     const cleanupRegex = /(?:Cthulhu|System|DiceBot)\s*[:：]\s*/ig;
     const timeCleanupRegex = /\[?\s*\d{1,2}:\d{2}\s*\]?/g;
+    
+    // 1d100系ロールの判定用正規表現 (出目指定用)
+    const systemRollRegex = /(?:S?CC|S?RES|S?CBR|1D100)/i;
 
     globalParsedRolls.forEach(data => {
         if (!checkedTabs.includes(data.tabId)) return;
@@ -148,7 +151,8 @@ function analyzeLog() {
         let rolledValue = null;
         let parsedTargets = [];
         
-        const formulaMatch = resultLine.match(/\((.+?)\)\s*[＞→]\s*(\d+)/);
+        // 数値抽出正規表現: 矢印は > -> ＞ → のいずれかに対応
+        const formulaMatch = resultLine.match(/\((.+?)\)\s*(?:[＞→>]|->)\s*(\d+)/);
         
         if (formulaMatch) {
             formula = formulaMatch[1];
@@ -159,7 +163,7 @@ function analyzeLog() {
                 parsedTargets = targetPartMatch[1].split(',').map(n => parseInt(n, 10));
             }
         } else {
-            const simpleMatch = resultLine.match(/[＞→]\s*(\d+)/);
+            const simpleMatch = resultLine.match(/(?:[＞→>]|->)\s*(\d+)/);
             if (simpleMatch) {
                 formula = resultLine;
                 rolledValue = parseInt(simpleMatch[1], 10);
@@ -174,22 +178,21 @@ function analyzeLog() {
 
         // 2. ダイス式・対抗ロール式の削除 (正規表現強化)
         // パターンA: 比較式 (CCB<=60, CCB<=(18*5), 1D100<=50)
-        // [英数字] + [比較演算子] + [数字/計算式/括弧]
         const comparisonRegex = /[a-zA-Z0-9]+[<>=]+[\d\+\-\*\/\(\)]+/g;
         
-        // パターンB: 関数式 (RESB(16-12), C(50))
-        // [英数字] + ( + [中身] + )
-        const functionRegex = /[a-zA-Z0-9]+\([\d\+\-\*\/\s]+\)/g;
+        // パターンB: 関数式 (RESB(16-12), CBRB(80,30))
+        // ★修正: カンマを含めるように変更
+        const functionRegex = /[a-zA-Z0-9]+\([\d\+\-\*\/\s,]+\)/g;
 
         let cleanedName = skillName
             .replace(comparisonRegex, '') // CCB<=(18*5) 等を削除
-            .replace(functionRegex, '')   // RESB(16-12) 等を削除
+            .replace(functionRegex, '')   // RESB(16-12), CBRB(80,30) 等を削除
             .trim();
         
         // 3. ボット名除去
         cleanedName = cleanedName.replace(cleanupRegex, '').trim();
 
-        // 削除して空にならなければ採用 (CCB<=60 のみの場合は空になるので元のままにする)
+        // 削除して空にならなければ採用 (式しかない場合は元のままにする)
         if (cleanedName.length > 0) {
             skillName = cleanedName;
         }
@@ -204,9 +207,13 @@ function analyzeLog() {
         let shouldInclude = false;
         let isTargetMatch = false;
 
+        // 出目指定時、1d100系のロールであるかチェックする
         if (targetRollNum !== null && rolledValue === targetRollNum) {
-            shouldInclude = true;
-            isTargetMatch = true;
+            const isSystemRoll = systemRollRegex.test(commandLine) || systemRollRegex.test(formula);
+            if (isSystemRoll) {
+                shouldInclude = true;
+                isTargetMatch = true;
+            }
         }
 
         // 能力値成長
