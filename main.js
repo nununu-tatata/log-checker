@@ -13,6 +13,9 @@ const btnSort1Cl100Fb = document.getElementById('btn-sort-1cl100fb');
 const tabCheckboxesDiv = document.getElementById('tab-checkboxes');
 const charCheckboxesDiv = document.getElementById('char-checkboxes');
 
+// ファイル名表示要素
+const fileNameDisplay = document.getElementById('file-name-display');
+
 // --- メイン処理 ---
 
 function processFile(file) {
@@ -20,6 +23,12 @@ function processFile(file) {
     
     // データリセット
     resetGlobalData();
+    
+    // ファイル名を表示
+    if (fileNameDisplay) {
+        fileNameDisplay.textContent = `📄 ${file.name}`;
+        fileNameDisplay.classList.add('show');
+    }
     
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -119,6 +128,8 @@ function analyzeLog() {
     const allowFailure = document.getElementById('chk-filter-failure').checked;
     const allow1d100 = document.getElementById('chk-filter-1d100').checked;
     const range1d100 = document.getElementById('chk-1d100-filter').checked;
+    
+    const allowInitial = document.getElementById('chk-filter-initial').checked;
 
     const characterData = {}; 
     let orderIndex = 0;
@@ -127,8 +138,8 @@ function analyzeLog() {
     const cleanupRegex = /(?:Cthulhu|System|DiceBot)\s*[:：]\s*/ig;
     const timeCleanupRegex = /\[?\s*\d{1,2}:\d{2}\s*\]?/g;
     
-    // 1d100系ロールの判定用正規表現 (出目指定用)
-    const systemRollRegex = /(?:S?CC|S?RES|S?CBR|1D100)/i;
+    // 1d100系ロールの判定用正規表現 (出目指定用 / S対応)
+    const systemRollRegex = /(?:S?CC|S?RES|S?CBR|SCC|1D100)/i;
 
     globalParsedRolls.forEach(data => {
         if (!checkedTabs.includes(data.tabId)) return;
@@ -151,7 +162,7 @@ function analyzeLog() {
         let rolledValue = null;
         let parsedTargets = [];
         
-        // 数値抽出正規表現: 矢印は > -> ＞ → のいずれかに対応
+        // 矢印は > -> ＞ → のいずれかに対応
         const formulaMatch = resultLine.match(/\((.+?)\)\s*(?:[＞→>]|->)\s*(\d+)/);
         
         if (formulaMatch) {
@@ -181,7 +192,7 @@ function analyzeLog() {
         const comparisonRegex = /[a-zA-Z0-9]+[<>=]+[\d\+\-\*\/\(\)]+/g;
         
         // パターンB: 関数式 (RESB(16-12), CBRB(80,30))
-        // ★修正: カンマを含めるように変更
+        // カンマを含めるように変更
         const functionRegex = /[a-zA-Z0-9]+\([\d\+\-\*\/\s,]+\)/g;
 
         let cleanedName = skillName
@@ -201,6 +212,13 @@ function analyzeLog() {
         const repeatMatch = resultLine.match(/^(#\d+)/);
         if (repeatMatch) {
             skillName = `${skillName} ${repeatMatch[1]}`;
+        }
+
+        // --- 初期値判定 (フィルタリング前に行う) ---
+        let isInitial = false;
+        if (parsedTargets.length === 1 && ["成功", "スペシャル", "決定的成功"].includes(resultType)) {
+            const baseValue = getSkillBaseValue(skillName);
+            if (typeof baseValue === 'number' && parsedTargets[0] === baseValue) isInitial = true;
         }
 
         // --- フィルタリング ---
@@ -255,15 +273,14 @@ function analyzeLog() {
                     }
                 }
             }
+
+            // 初期値オプションがONなら、初期値成功の場合は強制的に含める
+            if (isInitial && allowInitial) {
+                shouldInclude = true;
+            }
         }
 
         if (!shouldInclude) return;
-
-        let isInitial = false;
-        if (parsedTargets.length === 1 && ["成功", "スペシャル", "決定的成功"].includes(resultType)) {
-            const baseValue = getSkillBaseValue(skillName);
-            if (typeof baseValue === 'number' && parsedTargets[0] === baseValue) isInitial = true;
-        }
 
         let isPartialGrowth = false;
         if (shouldInclude && successMaxTarget !== null && parsedTargets.length > 1 && ["成功", "スペシャル", "決定的成功"].includes(resultType)) {

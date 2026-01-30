@@ -25,7 +25,7 @@ function parseCCFoliaLog(doc) {
         const contentSpan = spans[2];
         const contentText = contentSpan.textContent.trim();
 
-        // ★修正: 厳密なダイスロール判定 (半角矢印、シークレット系コマンド対応)
+        // 厳密なダイスロール判定 (半角矢印、シークレット系コマンド対応)
         
         // A. 矢印の直後に数値 (＞ > -> →)
         const hasArrowNumber = /(?:[＞→>]|->)\s*\d+/.test(contentText);

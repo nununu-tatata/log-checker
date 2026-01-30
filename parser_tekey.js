@@ -37,7 +37,7 @@ function parseTekeyLog(doc) {
     let mode = 'v2';
 
     if (logNodes.length === 0) {
-        // ★修正: .diceroll クラスが無い行（公開されたシークレットダイス等）も拾うため、
+        // .diceroll クラスが無い行（公開されたシークレットダイス等）も拾うため、
         // .diceroll だけでなく、.chatlog 直下のすべての div を取得して中身を判定させる
         logNodes = doc.querySelectorAll('.chatlog > div');
         mode = 'legacy';
@@ -126,7 +126,7 @@ function parseTekeyLog(doc) {
             resultLine = combinedText.substring(hashOneIndex).trim();
         }
 
-        // ★修正: 厳密なダイスロール判定 (半角矢印、シークレット系コマンド対応)
+        // 厳密なダイスロール判定 (半角矢印、シークレット系コマンド対応)
         // A. 矢印の直後に数値 (＞ > -> →)
         const hasArrowNumber = /(?:[＞→>]|->)\s*\d+/.test(resultLine);
         // B. ダイス展開式 ((1D100<=...))

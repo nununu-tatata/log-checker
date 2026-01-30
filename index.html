@@ -16,14 +16,14 @@
     <title>CoC成長チェックツール</title>
     
     <meta property="og:title" content="CoC成長チェックツール">
-    <meta property="og:description" content="Tekeyやココフォリアのログをドラッグ＆ドロップするだけで、技能の成長（成功・失敗・クリティカルなど）を自動判定・集計するツールです。スマホ対応！">
+    <meta property="og:description" content="Tekeyやココフォリアのログをドラッグ＆ドロップするだけで、技能の成長（CL・FB・S・初期値など）を自動判定・集計するツールです。スマホ対応！">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://nununu-tatata.github.io/log-checker/">
     <meta property="og:image" content="https://nununu-tatata.github.io/log-checker/ogp.png">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:site" content="@nukonuko_4">
 
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎲</text></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎲</text></svg>">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -48,7 +48,7 @@
             <button id="btn-theme-toggle" class="btn-icon" title="テーマ切替">🌙</button>
             <button class="disclaimer-btn" onclick="openModal('disclaimerModal')">
                 <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
-                規約
+                規約等
             </button>
             <button class="round-btn" onclick="openModal('authorModal')" title="作った人">
                 <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
@@ -118,7 +118,10 @@
                         ※場合によっては順番がうまく自動並び替え出来ない場合がありますので、適宜ファイル名を調整してください。<br>
                         ※結合後は下の「ログ読込」でまとめて成長チェックできます。
                     </p>
-                    <button id="btn-merge-download" class="btn-merge">結合してダウンロード</button>
+                    <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                        <input type="text" id="merger-filename-input" class="styled-input-small" style="max-width:200px;" placeholder="出力ファイル名 (省略可)">
+                        <button id="btn-merge-download" class="btn-merge">結合してダウンロード</button>
+                    </div>
                 </div>
                 <div id="merger-status" class="merger-status"></div>
             </div>
@@ -133,6 +136,7 @@
                     <div class="upload-text">ログ読込</div>
                     <input type="file" id="file-input" accept=".html" class="hidden">
                 </div>
+                <div id="file-name-display" class="file-name-display"></div>
 
                 <div class="panel-header">抽出設定</div>
                 <div class="section-group">
@@ -162,11 +166,17 @@
                 <div class="section-group">
                     <span class="section-label">抽出項目</span>
                     <div class="filter-grid-3col">
-                        <label class="filter-chip"><input type="checkbox" id="chk-filter-crit" checked><span class="chip-text">決定的成功</span></label>
-                        <label class="filter-chip"><input type="checkbox" id="chk-filter-fatal" checked><span class="chip-text">致命的失敗</span></label>
-                        <label class="filter-chip"><input type="checkbox" id="chk-filter-special" checked><span class="chip-text">スペシャル</span></label>
+                        <label class="filter-chip" data-tooltip="1〜5の出目、または<br>技能値に応じた決定的成功">
+                            <input type="checkbox" id="chk-filter-crit" checked><span class="chip-text">決定的成功</span>
+                        </label>
+                        <label class="filter-chip" data-tooltip="96〜100の出目、または<br>技能値に応じた致命的失敗">
+                            <input type="checkbox" id="chk-filter-fatal" checked><span class="chip-text">致命的失敗</span>
+                        </label>
+                        <label class="filter-chip" data-tooltip="技能値の1/5以下の<br>出目（スペシャル）">
+                            <input type="checkbox" id="chk-filter-special" checked><span class="chip-text">スペシャル</span>
+                        </label>
                         
-                        <div class="filter-group-integrated">
+                        <div class="filter-group-integrated" data-tooltip="決定的成功・スペシャル以外の<br>通常の成功。<br>※初期値成功にはマーク有">
                             <label class="filter-chip-header">
                                 <input type="checkbox" id="chk-filter-success">
                                 <span class="chip-text">通常成功</span>
@@ -176,9 +186,16 @@
                             </div>
                         </div>
 
-                        <label class="filter-chip"><input type="checkbox" id="chk-filter-failure"><span class="chip-text">失敗</span></label>
+                        <label class="filter-chip" data-tooltip="初期値での成功のみを抽出します。<br>「通常成功」がOFFでも<br>これに該当するものは表示されます。">
+                            <input type="checkbox" id="chk-filter-initial">
+                            <span class="chip-text">初期値</span>
+                        </label>
+
+                        <label class="filter-chip" data-tooltip="判定に失敗したロール">
+                            <input type="checkbox" id="chk-filter-failure"><span class="chip-text">失敗</span>
+                        </label>
                         
-                        <div class="filter-group-integrated">
+                        <div class="filter-group-integrated" data-tooltip="判定を伴わない<br>単なる1d100ロール">
                             <label class="filter-chip-header">
                                 <input type="checkbox" id="chk-filter-1d100">
                                 <span class="chip-text">1d100</span>
@@ -192,37 +209,37 @@
 
                 <div class="panel-header mt-20">オプション</div>
                 <div class="options-grid-3col">
-                    <div class="option-card-small" data-tooltip="コマンドと結果の全文を表示します。">
+                    <div class="option-card-small" data-tooltip="コマンドと結果の全文を<br>表示します。">
                         <div class="opt-header-small">
                             <span class="opt-title">ログ詳細を表示</span>
                             <label class="toggle-switch"><input type="checkbox" id="toggle-detail-log" checked><span class="slider"></span></label>
                         </div>
                     </div>
-                    <div class="option-card-small" data-tooltip="同じ技能の通常成功は初回のみ表示します。">
+                    <div class="option-card-small" data-tooltip="同じ技能の通常成功は<br>初回のみ表示します。">
                         <div class="opt-header-small">
                             <span class="opt-title">通常成功の重複を除外</span>
                             <label class="toggle-switch"><input type="checkbox" id="toggle-deduplicate"><span class="slider"></span></label>
                         </div>
                     </div>
-                    <div class="option-card-small" data-tooltip="ステータス・倍数ロールで出目1の場合、<br>能力値成長の可能性があるため抽出します。">
+                    <div class="option-card-small" data-tooltip="ステータス・倍数ロールで<br>出目1の場合、<br>能力値成長の可能性があるため<br>抽出します。">
                         <div class="opt-header-small">
                             <span class="opt-title">能力値成長も表示</span>
                             <label class="toggle-switch"><input type="checkbox" id="toggle-ability-growth"><span class="slider"></span></label>
                         </div>
                     </div>
-                    <div class="option-card-small" data-tooltip="結果問わずSAN/アイデア/幸運/知識などを全て省きます。">
+                    <div class="option-card-small" data-tooltip="結果問わず<br>SAN/アイデア/幸運/知識などを<br>全て省きます。">
                         <div class="opt-header-small">
                             <span class="opt-title">ステータス除外</span>
                             <label class="toggle-switch"><input type="checkbox" id="toggle-exclude-status"><span class="slider"></span></label>
                         </div>
                     </div>
-                    <div class="option-card-small" data-tooltip="結果問わずCON*5, STR*4 などを全て省きます。">
+                    <div class="option-card-small" data-tooltip="結果問わず<br>CON*5, STR*4 などを<br>全て省きます。">
                         <div class="opt-header-small">
                             <span class="opt-title">倍数ロール除外</span>
                             <label class="toggle-switch"><input type="checkbox" id="toggle-exclude-multi"><span class="slider"></span></label>
                         </div>
                     </div>
-                    <div class="option-card-small" id="card-target-roll" data-tooltip="指定した出目は結果に関わらず必ず抽出します。">
+                    <div class="option-card-small" id="card-target-roll" data-tooltip="指定した出目は<br>結果に関わらず<br>必ず抽出します。">
                         <div class="opt-header-small">
                             <span class="opt-title">出目指定</span>
                             <label class="toggle-switch"><input type="checkbox" id="toggle-target-roll"><span class="slider"></span></label>
@@ -231,7 +248,7 @@
                             <input type="number" id="inp-target-value" class="styled-input-small" placeholder="例: 96" disabled>
                         </div>
                     </div>
-                    <div class="option-card-small" id="card-max-target" data-tooltip="指定した値より高い技能値での通常成功を除外します。">
+                    <div class="option-card-small" id="card-max-target" data-tooltip="指定した値より<br>高い技能値での通常成功を<br>除外します。">
                         <div class="opt-header-small">
                             <span class="opt-title">通常成功の上限</span>
                             <label class="toggle-switch"><input type="checkbox" id="toggle-max-target"><span class="slider"></span></label>
@@ -256,7 +273,7 @@
         <main class="main-content">
             <div id="result-area">
                 <div class="placeholder-text">
-                    左側の「ログ読込」から<br>HTMLファイルを読み込んでください
+                    「ログ読込」から<br>HTMLファイルを読み込んでください
                 </div>
             </div>
         </main>
@@ -270,7 +287,7 @@
             <p>PUBLISHED BY KADOKAWA CORPORATION　「クトゥルフ神話TRPG」「新クトゥルフ神話TRPG」</p>
         </div>
         <div class="footer-right">
-            <p>最終更新日：2026/01/19</p>
+            <p>最終更新日：2026/01/30</p>
             <p><span style="cursor:pointer; text-decoration:underline;" onclick="openModal('creditsModal')">Special Thanks</span> | © 2026 ぬこた</p>
         </div>
     </div>
@@ -292,11 +309,12 @@
             <ul>
                 <li>ページ内で完結しているため、ファイルがどこかのサーバーにアップロードされる事はありません。</li>
                 <li>必ずTekeyのv2ログとココフォリアのmain/allログを使用してください。その他や整形済みのログは動作対応外です。</li>
+                <li>ログやダイスロールの技能名の書き方によっては正しく抽出されない場合があります。目視で最終確認などしてください。</li>
             </ul>
             <div class="modal-title">動作環境</div>
             <ul>
-                <li>推奨環境： PC / Google Chrome</li>
-                <li>確認済み環境： 確認中</li>
+                <li>推奨環境： PC (Win・Mac) / スマホ (iOS・Android)</li>
+                <li>確認済み環境： PC (Win・Mac) / スマホ (iOS・Android)　ブラウザ：Chrome / Safari / Edge / Firefox / Opera / Brave</li>
             </ul>
         </div>
     </div>

@@ -11,6 +11,9 @@ const mergerFileListDisplay = document.getElementById('merger-file-list');
 const btnMerge = document.getElementById('btn-merge-download');
 const mergerStatus = document.getElementById('merger-status');
 
+// ファイル名入力欄の取得
+const mergerFilenameInput = document.getElementById('merger-filename-input');
+
 let accumulatedFiles = [];
 
 // アコーディオン開閉
@@ -144,8 +147,18 @@ if (btnMerge) {
                 processFiles = sortFilesSmartly(processFiles);
             }
             
-            // ファイル名生成
-            const outputFilename = generateSmartFilename(processFiles);
+            // ファイル名決定ロジック
+            // 入力があればそれを優先、なければ自動生成
+            let outputFilename = "";
+            if (mergerFilenameInput && mergerFilenameInput.value.trim() !== "") {
+                outputFilename = mergerFilenameInput.value.trim();
+                // 拡張子補完
+                if (!outputFilename.toLowerCase().endsWith('.html')) {
+                    outputFilename += ".html";
+                }
+            } else {
+                outputFilename = generateSmartFilename(processFiles);
+            }
 
             const combinedHtml = await mergeFilesNative(processFiles);
             downloadMergedLog(combinedHtml, outputFilename);

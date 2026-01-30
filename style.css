@@ -88,7 +88,7 @@ body {
 header {
   display: flex; 
   justify-content: space-between; 
-  align-items: flex-end; /* ★変更: ボタンを右下に寄せるため flex-end に変更 */
+  align-items: flex-end; /* ボタンを右下に寄せる */
   margin-bottom: 20px; 
   border-bottom: 1px solid var(--border-color); 
   padding-bottom: 15px;
@@ -227,7 +227,7 @@ h1 {
         flex-direction: row; 
         justify-content: space-between; 
         text-align: left;
-        align-items: flex-end; /* ★追加: フッター右側を右下に寄せる */
+        align-items: flex-end; /* フッター右側を右下に寄せる */
     }
     .footer-right { text-align: right; }
 }
@@ -265,6 +265,19 @@ h1 {
 .upload-area-compact:hover { border-color: var(--primary-color); background-color: var(--element-bg); }
 .upload-icon { font-size: 18px; color: var(--primary-color); }
 .upload-text { font-weight: 700; font-size: 13px; }
+
+/* ファイル名表示エリアのスタイル */
+.file-name-display {
+    font-size: 11px;
+    color: var(--primary-color);
+    text-align: center;
+    margin-top: -5px;
+    margin-bottom: 15px;
+    font-weight: 700;
+    display: none;
+    word-break: break-all;
+}
+.file-name-display.show { display: block; }
 
 .panel-header {
   font-size: 13px; font-weight: 700;
@@ -498,7 +511,7 @@ input:checked + .slider:before { transform: translateX(14px); }
 }
 .character-card.collapsed .accordion-icon { transform: rotate(-90deg); }
 
-/* --- 修正版: 折りたたみ時、log-listだけ隠す（集計バーとテキスト出力は残す） --- */
+/* --- 折りたたみ時、log-listだけ隠す（集計バーとテキスト出力は残す） --- */
 .character-card.collapsed .log-list { 
     display: none; 
 }
@@ -587,7 +600,7 @@ input:checked + .slider:before { transform: translateX(14px); }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-/* --- 追加: テキスト出力アコーディオン --- */
+/* --- テキスト出力アコーディオン --- */
 .text-export-accordion {
     border-top: 1px solid var(--border-color);
     background: var(--input-bg);
@@ -616,7 +629,7 @@ input:checked + .slider:before { transform: translateX(14px); }
     display: block;
 }
 
-/* 追加: テキスト出力オプションエリア */
+/* テキスト出力オプションエリア */
 .text-export-options {
     display: flex;
     align-items: center;
@@ -707,7 +720,7 @@ input:checked + .slider:before { transform: translateX(14px); }
 }
 .merger-icon { font-size: 20px; }
 
-/* 追加: テキストを縦に並べるコンテナ */
+/* テキストを縦に並べるコンテナ */
 .merger-text-col {
     display: flex;
     flex-direction: column;
@@ -719,7 +732,7 @@ input:checked + .slider:before { transform: translateX(14px); }
     font-weight: 700; color: var(--primary-color); font-size: 14px;
 }
 
-/* 追加: サブテキストのスタイル */
+/* サブテキストのスタイル */
 .merger-subtitle {
     font-size: 10px;
     color: var(--sub-text-color);
