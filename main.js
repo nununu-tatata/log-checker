@@ -100,6 +100,28 @@ function calculateSortScore(roll) {
     return 999;
 }
 
+function isTargetRollMatch(val, pattern) {
+    if (!pattern) return false;
+    const parts = pattern.split(',');
+    for (let part of parts) {
+        part = part.trim();
+        if (part.includes('-')) {
+            const [minStr, maxStr] = part.split('-');
+            const min = parseInt(minStr.trim(), 10);
+            const max = parseInt(maxStr.trim(), 10);
+            if (!isNaN(min) && !isNaN(max) && val >= min && val <= max) {
+                return true;
+            }
+        } else {
+            const num = parseInt(part, 10);
+            if (!isNaN(num) && val === num) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 function analyzeLog() {
     if (globalParsedRolls.length === 0) return;
 
@@ -113,9 +135,9 @@ function analyzeLog() {
     const checkAbilityGrowth = document.getElementById('toggle-ability-growth').checked;
 
     const inpTargetValue = document.getElementById('inp-target-value');
-    let targetRollNum = null;
+    let targetRollPattern = null;
     if (document.getElementById('toggle-target-roll').checked && inpTargetValue.value) {
-        targetRollNum = parseInt(inpTargetValue.value, 10);
+        targetRollPattern = inpTargetValue.value;
     }
 
     const inpSuccessMaxTarget = document.getElementById('inp-success-max-target');
@@ -229,7 +251,7 @@ function analyzeLog() {
         let isTargetMatch = false;
 
         // 出目指定時、1d100系のロールであるかチェックする
-        if (targetRollNum !== null && rolledValue === targetRollNum) {
+        if (targetRollPattern !== null && isTargetRollMatch(rolledValue, targetRollPattern)) {
             const isSystemRoll = systemRollRegex.test(commandLine) || systemRollRegex.test(formula);
             if (isSystemRoll) {
                 shouldInclude = true;
