@@ -1107,9 +1107,22 @@ input:checked + .slider:before { transform: translateX(14px); }
 }
 
 /* --- 関連ツールリンクのスタイル --- */
+/* 「他のツールはこちら→」（リンクではない文字）と「ぬこた屋ツールズ」へのリンクを横に並べる */
+.related-links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 6px;
+    margin-top: 5px;
+    font-size: 11px;
+}
+
+.related-label {
+    color: var(--sub-text-color);
+}
+
 .related-link {
     display: inline-block;
-    margin-top: 5px;
     font-size: 11px;
     color: var(--primary-color);
     text-decoration: none;
